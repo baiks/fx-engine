@@ -1,0 +1,212 @@
+{
+  "info": {
+    "name": "FX Engine API",
+    "description": "Foreign Exchange Engine API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/v1/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "health"]
+        }
+      }
+    },
+    {
+      "name": "Generate Quote - USD to KES",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"from_currency\": \"USD\",\n  \"to_currency\": \"KES\",\n  \"amount\": \"100.00\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/quotes",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "quotes"]
+        }
+      }
+    },
+    {
+      "name": "Generate Quote - EUR to NGN",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"from_currency\": \"EUR\",\n  \"to_currency\": \"NGN\",\n  \"amount\": \"500.00\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/quotes",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "quotes"]
+        }
+      }
+    },
+    {
+      "name": "Get Quote by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/v1/quotes/{{quote_id}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "quotes", "{{quote_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Execute Transaction",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quote_id\": \"{{quote_id}}\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/transactions",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "transactions"]
+        }
+      }
+    },
+    {
+      "name": "Get Transaction by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/v1/transactions/{{transaction_id}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "transactions", "{{transaction_id}}"]
+        }
+      }
+    },
+    {
+      "name": "Get Transaction History",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/v1/transactions?limit=50",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "transactions"],
+          "query": [
+            {
+              "key": "limit",
+              "value": "50"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Get All Exchange Rates",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/v1/rates",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "rates"]
+        }
+      }
+    },
+    {
+      "name": "Set Exchange Rate",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"base_currency\": \"USD\",\n  \"target_currency\": \"KES\",\n  \"rate\": \"129.50\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/rates",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "rates"]
+        }
+      }
+    },
+    {
+      "name": "Update Rates from API",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"base_currency\": \"USD\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/rates/update",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "rates", "update"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "quote_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

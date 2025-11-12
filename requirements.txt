@@ -1,0 +1,7 @@
+Flask
+Flask-SQLAlchemy
+python-dotenv
+requests
+pytest
+pytest-flask
+python-dateutil
