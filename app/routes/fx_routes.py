@@ -46,10 +46,8 @@ def create_quote():
         }), 201
 
     except ValueError as e:
-        print("ValueError: ", e)
         return jsonify({'error': str(e)}), 400
     except Exception as e:
-        print("Exception: ", e)
         return jsonify({'error': 'Internal server error'}), 500
 
 
@@ -64,10 +62,8 @@ def get_quote(quote_id):
         }), 200
 
     except ValueError as e:
-        print("ValueError: ", e)
         return jsonify({'error': str(e)}), 404
     except Exception as e:
-        print("Exception: ", e)
         return jsonify({'error': 'Internal server error'}), 500
 
 
