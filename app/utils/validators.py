@@ -1,5 +1,5 @@
 from flask import current_app
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 
 def validate_currency(currency):
@@ -11,14 +11,18 @@ def validate_currency(currency):
 
 
 def validate_amount(amount):
-    """Validate amount is positive and valid"""
+    """Validate that the amount is a valid positive decimal number."""
     try:
+        # Convert safely to Decimal
         decimal_amount = Decimal(str(amount))
-        if decimal_amount <= 0:
-            raise ValueError("Amount must be greater than zero")
-        return decimal_amount
-    except (ValueError, TypeError) as e:
+    except (InvalidOperation, TypeError):
         raise ValueError(f"Invalid amount: {amount}")
+
+    # Check that it's greater than zero
+    if decimal_amount <= 0:
+        raise ValueError("Amount must be greater than zero")
+
+    return decimal_amount
 
 
 def validate_currency_pair(from_currency, to_currency):
