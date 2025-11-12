@@ -57,30 +57,24 @@ A production-ready foreign exchange engine that handles currency conversions bet
 
 ### Installation
 
-1. **Create project structure**:
-```bash
-# Run the setup script
-bash setup_commands.sh
-```
-
-2. **Create virtual environment**:
+1**Create virtual environment**:
 ```bash
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-3. **Install dependencies**:
+2**Install dependencies**:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. **Configure environment**:
+3**Configure environment**:
 ```bash
 cp .env.example .env
 # Edit .env with your configuration
 ```
 
-5. **Initialize database**:
+4**Initialize database**:
 ```bash
 # This will create tables and seed initial rates
 flask seed-rates
