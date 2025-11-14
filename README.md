@@ -97,6 +97,12 @@ The API will be available at `http://localhost:5000`
 
 ## API Documentation
 
+## 🧪 API Testing with Swagger
+
+A ready-to-use Swagger is included for quick testing ([Open Swagger](http://localhost:5000/apidocs/)).
+
+![SWAGGER](./swagger.png)
+
 ## 🧪 API Testing with Postman
 
 A ready-to-use Postman collection is included for quick testing.

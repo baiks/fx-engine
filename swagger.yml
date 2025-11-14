@@ -1,0 +1,510 @@
+swagger: "2.0"
+info:
+  title: "FX Engine API"
+  description: "Foreign Exchange Engine API endpoints"
+  version: "1.0.0"
+  contact:
+    email: "support@fxengine.com"
+
+basePath: "/api/v1"
+schemes:
+  - "http"
+  - "https"
+
+tags:
+  - name: "System"
+    description: "System health and status"
+  - name: "Quotes"
+    description: "FX quote generation and retrieval"
+  - name: "Transactions"
+    description: "Transaction execution and history"
+  - name: "Exchange Rates"
+    description: "Exchange rate management"
+
+paths:
+  /health:
+    get:
+      tags:
+        - "System"
+      summary: "Health check endpoint"
+      description: "Check if the service is running"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Service is healthy"
+          schema:
+            type: "object"
+            properties:
+              status:
+                type: "string"
+                example: "healthy"
+              service:
+                type: "string"
+                example: "FX Engine"
+
+  /quotes:
+    post:
+      tags:
+        - "Quotes"
+      summary: "Generate FX quote"
+      description: "Create a new foreign exchange quote"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Quote request parameters"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "from_currency"
+              - "to_currency"
+              - "amount"
+            properties:
+              from_currency:
+                type: "string"
+                example: "USD"
+                description: "Source currency code (ISO 4217)"
+              to_currency:
+                type: "string"
+                example: "KES"
+                description: "Target currency code (ISO 4217)"
+              amount:
+                type: "string"
+                example: "100.00"
+                description: "Amount to convert"
+      responses:
+        201:
+          description: "Quote created successfully"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: true
+              data:
+                type: "object"
+                properties:
+                  quote_id:
+                    type: "string"
+                    example: "550e8400-e29b-41d4-a716-446655440000"
+                  from_currency:
+                    type: "string"
+                    example: "USD"
+                  to_currency:
+                    type: "string"
+                    example: "KES"
+                  from_amount:
+                    type: "string"
+                    example: "100.00"
+                  to_amount:
+                    type: "string"
+                    example: "12950.00"
+                  exchange_rate:
+                    type: "string"
+                    example: "129.50"
+                  expires_at:
+                    type: "string"
+                    format: "date-time"
+                    example: "2024-01-01T12:30:00Z"
+        400:
+          description: "Invalid request"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /quotes/{quote_id}:
+    get:
+      tags:
+        - "Quotes"
+      summary: "Get quote by ID"
+      description: "Retrieve a specific quote by its ID"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "quote_id"
+          in: "path"
+          description: "Quote ID"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Quote details"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: true
+              data:
+                type: "object"
+                properties:
+                  quote_id:
+                    type: "string"
+                  from_currency:
+                    type: "string"
+                  to_currency:
+                    type: "string"
+                  from_amount:
+                    type: "string"
+                  to_amount:
+                    type: "string"
+                  exchange_rate:
+                    type: "string"
+                  expires_at:
+                    type: "string"
+                    format: "date-time"
+        404:
+          description: "Quote not found"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /transactions:
+    post:
+      tags:
+        - "Transactions"
+      summary: "Execute FX transaction"
+      description: "Execute a transaction from an existing quote"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Transaction execution parameters"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "quote_id"
+            properties:
+              quote_id:
+                type: "string"
+                example: "550e8400-e29b-41d4-a716-446655440000"
+                description: "Quote ID to execute"
+              idempotency_key:
+                type: "string"
+                example: "idempotency-key-123"
+                description: "Optional idempotency key to prevent duplicate transactions"
+      responses:
+        201:
+          description: "Transaction executed successfully"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: true
+              data:
+                type: "object"
+                properties:
+                  transaction_id:
+                    type: "string"
+                    example: "txn_abc123"
+                  quote_id:
+                    type: "string"
+                  status:
+                    type: "string"
+                    example: "completed"
+                  from_currency:
+                    type: "string"
+                  to_currency:
+                    type: "string"
+                  from_amount:
+                    type: "string"
+                  to_amount:
+                    type: "string"
+                  exchange_rate:
+                    type: "string"
+                  executed_at:
+                    type: "string"
+                    format: "date-time"
+        400:
+          description: "Invalid request or quote expired"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+
+    get:
+      tags:
+        - "Transactions"
+      summary: "Get transaction history"
+      description: "Retrieve a list of transactions"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "limit"
+          in: "query"
+          description: "Maximum number of transactions to return"
+          required: false
+          type: "integer"
+          default: 100
+      responses:
+        200:
+          description: "Transaction list"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: true
+              data:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    transaction_id:
+                      type: "string"
+                    quote_id:
+                      type: "string"
+                    status:
+                      type: "string"
+                    from_currency:
+                      type: "string"
+                    to_currency:
+                      type: "string"
+                    from_amount:
+                      type: "string"
+                    to_amount:
+                      type: "string"
+                    exchange_rate:
+                      type: "string"
+                    executed_at:
+                      type: "string"
+                      format: "date-time"
+              count:
+                type: "integer"
+                example: 1
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /transactions/{transaction_id}:
+    get:
+      tags:
+        - "Transactions"
+      summary: "Get transaction by ID"
+      description: "Retrieve a specific transaction by its ID"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "transaction_id"
+          in: "path"
+          description: "Transaction ID"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Transaction details"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: true
+              data:
+                type: "object"
+                properties:
+                  transaction_id:
+                    type: "string"
+                  quote_id:
+                    type: "string"
+                  status:
+                    type: "string"
+                  from_currency:
+                    type: "string"
+                  to_currency:
+                    type: "string"
+                  from_amount:
+                    type: "string"
+                  to_amount:
+                    type: "string"
+                  exchange_rate:
+                    type: "string"
+                  executed_at:
+                    type: "string"
+                    format: "date-time"
+        404:
+          description: "Transaction not found"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /rates:
+    get:
+      tags:
+        - "Exchange Rates"
+      summary: "Get all exchange rates"
+      description: "Retrieve all available exchange rates"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Exchange rates list"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: true
+              data:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    base_currency:
+                      type: "string"
+                      example: "USD"
+                    target_currency:
+                      type: "string"
+                      example: "KES"
+                    rate:
+                      type: "string"
+                      example: "129.50"
+                    updated_at:
+                      type: "string"
+                      format: "date-time"
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+
+    post:
+      tags:
+        - "Exchange Rates"
+      summary: "Set exchange rate"
+      description: "Manually set an exchange rate"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Exchange rate parameters"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - "base_currency"
+              - "target_currency"
+              - "rate"
+            properties:
+              base_currency:
+                type: "string"
+                example: "USD"
+                description: "Base currency code (ISO 4217)"
+              target_currency:
+                type: "string"
+                example: "KES"
+                description: "Target currency code (ISO 4217)"
+              rate:
+                type: "string"
+                example: "129.50"
+                description: "Exchange rate value"
+      responses:
+        201:
+          description: "Rate set successfully"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: true
+              data:
+                type: "object"
+                properties:
+                  base_currency:
+                    type: "string"
+                  target_currency:
+                    type: "string"
+                  rate:
+                    type: "string"
+        400:
+          description: "Invalid request"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+
+  /rates/update:
+    post:
+      tags:
+        - "Exchange Rates"
+      summary: "Update rates from external API"
+      description: "Fetch and update exchange rates from an external API"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Update parameters"
+          required: false
+          schema:
+            type: "object"
+            properties:
+              base_currency:
+                type: "string"
+                example: "USD"
+                description: "Base currency code (defaults to USD)"
+      responses:
+        200:
+          description: "Rates updated successfully"
+          schema:
+            type: "object"
+            properties:
+              success:
+                type: "boolean"
+                example: true
+              data:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                    example: "Rates updated successfully"
+                  rates_updated:
+                    type: "integer"
+                    example: 5
+                  base_currency:
+                    type: "string"
+                    example: "USD"
+        400:
+          description: "Invalid request"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal server error"
+          schema:
+            $ref: "#/definitions/Error"
+
+definitions:
+  Error:
+    type: "object"
+    properties:
+      error:
+        type: "string"
+        description: "Error message"
+        example: "Invalid request parameters"
